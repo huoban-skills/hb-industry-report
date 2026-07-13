@@ -57,7 +57,8 @@
 - viewBox 宽 760–920，颜色只用 `var(--accent)` `var(--accent-soft)` `var(--gold)` `var(--gold-soft)` `var(--surface)` `var(--ink)` `var(--ink-soft)` `var(--muted)` `var(--line)`；
 - 文本 font-size 11–15；每个 svg 带 `role="img"` 和 `aria-label`；
 - marker 箭头 id 全文件不重复（arr/arrg/fa/pa 各图分开）；
-- 语义：accent = 常规/主角，gold = 异常态/现在进行时/钱的流向，虚线 = 非常规或外部流。
+- 语义：accent = 常规/主角，gold = 异常态/现在进行时/钱的流向，虚线 = 非常规或外部流；
+- 资金链图（图 3）中主角块用 accent 实心填充，且必须在块上方加金色标注「▼ 本报告主角」，figcaption 末尾说明"深色实心块为本报告主角（XX）"——读者要像看商场地图一样一眼找到"你在这里"；1.1 的「报告主角与范围」callout 末尾指向该图（"主角在产业链中的位置见 2.3 的图 3"）。
 
 ## 语气与文风
 
