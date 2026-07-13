@@ -57,6 +57,7 @@
 
 - viewBox 宽 760–920，颜色只用 `var(--accent)` `var(--accent-soft)` `var(--gold)` `var(--gold-soft)` `var(--surface)` `var(--ink)` `var(--ink-soft)` `var(--muted)` `var(--line)`；
 - 文本 font-size 11–15；每个 svg 带 `role="img"` 和 `aria-label`；
+- **文字与任何线/曲线的间距 ≥6px**：注释文字放在曲线的留白侧（下方回流线→文字放线下方），引线宁可缩短也不许扎进字域，长文字先估宽（CJK≈1em/字）再定引线端点；写完跑 `scripts/check_svg_overlap.py` 验证；
 - marker 箭头 id 全文件不重复（arr/arrg/fa/pa 各图分开）；
 - 语义：accent = 常规/主角，gold = 异常态/现在进行时/钱的流向，虚线 = 非常规或外部流；
 - 链条全景图（图 3）中主角块用 accent 实心填充，且必须在块上方加金色标注「▼ 本报告主角」，figcaption 末尾说明"深色实心块为本报告主角（XX）"——读者要像看商场地图一样一眼找到"你在这里"；1.1 的「报告主角与范围」callout 末尾指向该图（"主角在产业链中的位置见 2.3 的图 3"）；
