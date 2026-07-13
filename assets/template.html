@@ -1,0 +1,301 @@
+<title>【行业名】行业分析报告</title>
+<style>
+:root {
+  --paper: #F5F6F4;
+  --surface: #FFFFFF;
+  --ink: #1C2530;
+  --ink-soft: #4A5866;
+  --muted: #7A8794;
+  --accent: #24466B;
+  --accent-soft: #E4EAF1;
+  --gold: #A67C3D;
+  --gold-soft: #F3ECDF;
+  --line: #DCE0DC;
+  --warn-bg: #F6EFE3;
+  --warn-edge: #B98A3F;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #10161D;
+    --surface: #18212B;
+    --ink: #E4E8E4;
+    --ink-soft: #B4BFC8;
+    --muted: #7E8B97;
+    --accent: #85ACD4;
+    --accent-soft: #1F2E40;
+    --gold: #C9A063;
+    --gold-soft: #2C2517;
+    --line: #2A3541;
+    --warn-bg: #26211A;
+    --warn-edge: #C9A063;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #10161D;
+  --surface: #18212B;
+  --ink: #E4E8E4;
+  --ink-soft: #B4BFC8;
+  --muted: #7E8B97;
+  --accent: #85ACD4;
+  --accent-soft: #1F2E40;
+  --gold: #C9A063;
+  --gold-soft: #2C2517;
+  --line: #2A3541;
+  --warn-bg: #26211A;
+  --warn-edge: #C9A063;
+}
+:root[data-theme="light"] {
+  --paper: #F5F6F4;
+  --surface: #FFFFFF;
+  --ink: #1C2530;
+  --ink-soft: #4A5866;
+  --muted: #7A8794;
+  --accent: #24466B;
+  --accent-soft: #E4EAF1;
+  --gold: #A67C3D;
+  --gold-soft: #F3ECDF;
+  --line: #DCE0DC;
+  --warn-bg: #F6EFE3;
+  --warn-edge: #B98A3F;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+  margin: 0;
+}
+.wrap { max-width: 780px; margin: 0 auto; padding: 0 24px 96px; }
+
+header.cover { padding: 72px 0 40px; border-bottom: 3px double var(--line); }
+.cover .kicker {
+  font-size: 13px; letter-spacing: 0.35em; color: var(--gold);
+  font-family: "Noto Serif SC", "Songti SC", "SimSun", serif; margin-bottom: 20px;
+}
+.cover h1 {
+  font-family: "Noto Serif SC", "Songti SC", "SimSun", serif;
+  font-size: clamp(30px, 5vw, 44px); font-weight: 700;
+  line-height: 1.3; margin: 0 0 8px; text-wrap: balance; color: var(--ink);
+}
+.cover .sub {
+  font-family: "Noto Serif SC", "Songti SC", "SimSun", serif;
+  font-size: 18px; color: var(--accent); margin: 0;
+}
+
+.abstract {
+  background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--gold);
+  padding: 22px 26px 16px; margin: 36px 0 0;
+}
+.abstract .ab-title {
+  font-size: 12px; letter-spacing: 0.3em; color: var(--gold); font-weight: 700; margin-bottom: 12px;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+}
+.abstract p { font-size: 14.5px; color: var(--ink-soft); margin: 0 0 12px; }
+.abstract p:last-child { margin-bottom: 0; }
+
+nav.toc { margin: 36px 0 0; padding: 20px 24px; background: var(--surface); border: 1px solid var(--line); }
+nav.toc .toc-title { font-size: 12px; letter-spacing: 0.3em; color: var(--muted); margin-bottom: 10px; }
+nav.toc ol { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 32px; }
+nav.toc li { margin: 4px 0; break-inside: avoid; }
+nav.toc a { color: var(--ink-soft); text-decoration: none; font-size: 14.5px; }
+nav.toc a:hover, nav.toc a:focus { color: var(--accent); text-decoration: underline; }
+
+section.chapter { margin-top: 72px; }
+.chap-head { margin-bottom: 28px; }
+.chap-head .eyebrow { font-size: 12px; letter-spacing: 0.35em; color: var(--gold); margin-bottom: 6px; }
+.chap-head h2 {
+  font-family: "Noto Serif SC", "Songti SC", "SimSun", serif;
+  font-size: 27px; font-weight: 700; margin: 0 0 6px; color: var(--ink); text-wrap: balance;
+}
+.chap-head .lede { font-size: 15px; color: var(--muted); margin: 0; }
+h3 {
+  font-family: "Noto Serif SC", "Songti SC", "SimSun", serif;
+  font-size: 19.5px; font-weight: 700; color: var(--accent);
+  margin: 44px 0 12px; text-wrap: balance;
+}
+h4 { font-size: 15.5px; font-weight: 700; color: var(--ink); margin: 28px 0 8px; }
+p { margin: 0 0 16px; }
+strong { color: var(--ink); }
+ul, ol { padding-left: 1.4em; margin: 0 0 16px; }
+li { margin: 4px 0; }
+li::marker { color: var(--gold); }
+
+.term { border-bottom: 1px dashed var(--gold); font-weight: 600; color: var(--ink); }
+
+.callout {
+  background: var(--accent-soft); border-left: 3px solid var(--accent);
+  padding: 14px 18px; margin: 20px 0; font-size: 14.5px; color: var(--ink-soft);
+}
+.callout b { color: var(--accent); }
+.warnbox {
+  background: var(--warn-bg); border-left: 3px solid var(--warn-edge);
+  padding: 14px 18px; margin: 20px 0; font-size: 14.5px; color: var(--ink-soft);
+}
+.warnbox b { color: var(--warn-edge); }
+
+.figure { margin: 28px 0; }
+.figure .fig-frame {
+  background: var(--surface); border: 1px solid var(--line);
+  padding: 18px 12px; overflow-x: auto;
+}
+.figure figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; text-align: center; }
+.figure figcaption b { color: var(--ink-soft); }
+svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+svg text { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+
+table { border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 14px; }
+th {
+  text-align: left; font-weight: 600; color: var(--accent);
+  border-bottom: 2px solid var(--accent); padding: 8px 12px 6px; white-space: nowrap;
+}
+td { border-bottom: 1px solid var(--line); padding: 9px 12px; vertical-align: top; color: var(--ink-soft); }
+td:first-child { color: var(--ink); font-weight: 600; white-space: nowrap; }
+.table-scroll { overflow-x: auto; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 24px 0; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--gold); padding: 14px 16px 12px; }
+.stat .num {
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-size: 26px; font-weight: 700; color: var(--ink);
+  font-variant-numeric: tabular-nums; line-height: 1.2;
+}
+.stat .num small { font-size: 14px; font-weight: 400; color: var(--muted); }
+.stat .label { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+
+.block { background: var(--surface); border: 1px solid var(--line); margin: 32px 0; }
+.block-head {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--accent-soft);
+}
+.block-head .no {
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-size: 13px; color: var(--gold); letter-spacing: 0.1em; white-space: nowrap;
+}
+.block-head h4 { margin: 0; font-size: 17px; color: var(--accent); }
+.block-body { padding: 6px 20px 18px; }
+.block-body h5 {
+  font-size: 12.5px; letter-spacing: 0.22em; color: var(--gold);
+  margin: 20px 0 6px; font-weight: 700;
+}
+.block-body p, .block-body ul { font-size: 14.5px; margin-bottom: 10px; }
+.block-body ul { padding-left: 1.3em; }
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 5px; margin: 4px 0 10px; }
+.flow .s {
+  background: var(--accent-soft); color: var(--ink); font-size: 13px;
+  padding: 4px 11px; border: 1px solid var(--line); white-space: nowrap;
+}
+.flow .a { color: var(--gold); font-size: 13px; }
+
+dl.glossary { margin: 24px 0; }
+dl.glossary > div { padding: 12px 0; border-bottom: 1px solid var(--line); }
+dl.glossary dt {
+  font-weight: 700; color: var(--ink); font-size: 15px;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+}
+dl.glossary dt small { font-weight: 400; color: var(--muted); font-family: -apple-system, "PingFang SC", sans-serif; margin-left: 8px; font-size: 12.5px; }
+dl.glossary dd { margin: 4px 0 0; color: var(--ink-soft); font-size: 14.5px; }
+
+footer.colophon {
+  margin-top: 80px; padding-top: 20px; border-top: 3px double var(--line);
+  font-size: 13px; color: var(--muted);
+}
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+@media (max-width: 560px) { nav.toc ol { columns: 1; } }
+</style>
+
+<div class="wrap">
+
+<header class="cover">
+  <div class="kicker">行 业 分 析 报 告</div>
+  <h1><!-- 行业名，纯行业称谓，不带"管理/系统/平台" --></h1>
+  <p class="sub">—— <!-- 一句话点出行业本质 --></p>
+</header>
+
+<div class="abstract">
+  <div class="ab-title">摘 要</div>
+  <p><!-- 第一段：行业定义 + 生活化类比 + 所处阶段 --></p>
+  <p><!-- 第二段：体感数字 + 六环节业务链 + 最复杂的一环 --></p>
+  <p><!-- 第三段：三座大山根因 + 一句话核心诉求 --></p>
+</div>
+
+<nav class="toc">
+  <div class="toc-title">目 录</div>
+  <ol>
+    <li><a href="#ch1">一、行业背景</a></li>
+    <li><a href="#ch2">二、商业模式</a></li>
+    <li><a href="#ch3">三、需求分析</a></li>
+    <li><a href="#appendix">附录：行业术语表</a></li>
+  </ol>
+</nav>
+
+<section class="chapter" id="ch1">
+  <div class="chap-head">
+    <div class="eyebrow">第 一 章</div>
+    <h2>行业背景</h2>
+    <p class="lede"><!-- 本章回答：……（口语化设问放这里，不放标题） --></p>
+  </div>
+  <h3>1.1 行业定义</h3>
+  <!-- 一句话定义 + 加粗类比；然后 <div class="callout"><b>行业边界</b>：…</div> -->
+  <h3>1.2 发展阶段</h3>
+  <!-- 图1 时间轴 SVG（figure.figure > .fig-frame > svg + figcaption）；3个关键转折 ul；callout"理解钥匙" -->
+  <h3>1.3 业务规模</h3>
+  <!-- <div class="stats"> 4个 .stat 卡（.num/.label）</div> + 一段解读 -->
+</section>
+
+<section class="chapter" id="ch2">
+  <div class="chap-head">
+    <div class="eyebrow">第 二 章</div>
+    <h2>商业模式</h2>
+    <p class="lede">本章回答：这门生意服务谁、满足什么需求？提供的产品和服务是什么？资金如何流动、利益如何分配？</p>
+  </div>
+  <h3>2.1 目标客户与需求</h3>
+  <!-- 客户是谁 + 需求分层 + 隐形事实 -->
+  <h3>2.2 产品与服务</h3>
+  <!-- 真正卖的是什么；图2 产品全景（构成要素/生命周期/产品家族三层）；经营策略段 -->
+  <h3>2.3 资金上下游与利益分配</h3>
+  <!-- 图3 资金链双层图；利益分配段；上下游表（位置|角色|做什么|核心诉求，包在 .table-scroll） -->
+</section>
+
+<section class="chapter" id="ch3">
+  <div class="chap-head">
+    <div class="eyebrow">第 三 章</div>
+    <h2>需求分析</h2>
+    <p class="lede">本章回答：业务全流程如何运转？每个环节由谁参与、有何特征、痛点在哪里？</p>
+  </div>
+  <h3>3.1 L1 总流程</h3>
+  <!-- 图4 六环节流程图 + "最反直觉的一点"段落 -->
+  <h3>3.2 分块详解</h3>
+  <!-- 每个环节一个 .block：
+  <div class="block">
+    <div class="block-head"><span class="no">环节 ①</span><h4>环节名（纯名词）</h4></div>
+    <div class="block-body">
+      <h5>这个环节在做什么</h5><p>…</p>
+      <h5>子流程</h5>
+      <div class="flow"><span class="s">步骤一</span><span class="a">→</span><span class="s">步骤二</span>…</div>
+      <h5>谁在参与</h5><p>…</p>
+      <h5>业务特征</h5><ul>…</ul>
+      <h5>痛点</h5><ul>…</ul>
+    </div>
+  </div>
+  行业特色图（图5）挂在最复杂的块内；灰色环节加 <div class="warnbox"><b>合规风险提示</b>：…</div> -->
+  <h3>3.3 方案切入视角</h3>
+  <!-- callout"痛点根因"（三座大山）+ ol 三条要点 -->
+</section>
+
+<section class="chapter" id="appendix">
+  <div class="chap-head">
+    <div class="eyebrow">附 录</div>
+    <h2>行业术语表</h2>
+    <p class="lede">正文首次出现处已就地解释，此处按主题集中列出，供回查。</p>
+  </div>
+  <!-- 3–4 组：<h4>分组名</h4><dl class="glossary"><div><dt>术语 <small>别名</small></dt><dd>解释</dd></div>…</dl> -->
+</section>
+
+<footer class="colophon">
+  <p><!-- 资料来源：YYYY-MM-DD 访谈记录（时长）。案例数据来自单一XX，供建立体感，非行业统计口径。公开资料标注。示意图声明。本报告为内部学习材料，涉及敏感内容仅作现状描述。 --></p>
+</footer>
+
+</div>
