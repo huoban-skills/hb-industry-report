@@ -197,6 +197,10 @@ dl.glossary dt {
 dl.glossary dt small { font-weight: 400; color: var(--muted); font-family: -apple-system, "PingFang SC", sans-serif; margin-left: 8px; font-size: 12.5px; }
 dl.glossary dd { margin: 4px 0 0; color: var(--ink-soft); font-size: 14.5px; }
 
+a.term { text-decoration: none; }
+a.term:hover, a.term:focus { background: var(--gold-soft); }
+dl.glossary > div { scroll-margin-top: 24px; }
+dl.glossary > div:target { background: var(--gold-soft); }
 footer.colophon {
   margin-top: 80px; padding-top: 20px; border-top: 3px double var(--line);
   font-size: 13px; color: var(--muted);
@@ -291,7 +295,8 @@ a { color: var(--accent); }
     <h2>行业术语表</h2>
     <p class="lede">正文首次出现处已就地解释，此处按主题集中列出，供回查。</p>
   </div>
-  <!-- 3–4 组：<h4>分组名</h4><dl class="glossary"><div><dt>术语 <small>别名</small></dt><dd>解释</dd></div>…</dl> -->
+  <!-- 3–4 组：<h4>分组名</h4><dl class="glossary"><div id="term-术语"><dt>术语 <small>别名</small></dt><dd>解释</dd></div>…</dl>
+  每个词条 div 带 id="term-主名"；正文术语写成 <a class="term" href="#term-主名">术语</a>，点击跳转定位（无词条的黑话用 span） -->
 </section>
 
 <footer class="colophon">
