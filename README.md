@@ -15,7 +15,7 @@
 ## 安装
 
 ```bash
-git clone https://github.com/1145434396-boop/hb-industry-report.git ~/.claude/skills/hb-industry-report
+git clone https://github.com/huoban-skills/hb-industry-report.git ~/.claude/skills/hb-industry-report
 ```
 
 ## 使用
