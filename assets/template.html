@@ -67,7 +67,7 @@ body {
   line-height: 1.85;
   margin: 0;
 }
-.wrap { max-width: 780px; margin: 0 auto; padding: 0 24px 96px; }
+.wrap { max-width: 920px; margin: 0 auto; padding: 0 24px 96px; }
 
 header.cover { padding: 72px 0 40px; border-bottom: 3px double var(--line); }
 .cover .kicker {
@@ -208,7 +208,9 @@ nav.toc ul li { margin: 2px 0; }
 nav.toc ul a { font-size: 13px; color: var(--muted); }
 nav.toc a.active { color: var(--gold); font-weight: 700; }
 @media (min-width: 1380px) {
-  nav.toc { position: fixed; top: 72px; left: max(24px, calc(50% - 620px));
+  /* 让「目录 + 正文」作为整体居中，而非只居中正文，避免右侧留白过多 */
+  .wrap { margin-left: calc(50vw - 345px); margin-right: auto; }
+  nav.toc { position: fixed; top: 72px; left: max(24px, calc(50vw - 575px));
     width: 190px; max-height: calc(100vh - 120px); overflow-y: auto; margin: 0;
     padding: 0 14px 24px 0; background: none; border: none; scrollbar-width: none; }
   nav.toc::-webkit-scrollbar { display: none; }
@@ -222,6 +224,8 @@ footer.colophon {
 a { color: var(--accent); }
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 @media (max-width: 560px) { nav.toc ol { columns: 1; } }
+/* PDF 导出：图与图注、环节卡片、表格不许被分页切开 */
+@media print { .figure, .block, .callout, .warnbox, table, .stats { break-inside: avoid; } }
 </style>
 
 <div class="wrap">
@@ -245,7 +249,7 @@ a { color: var(--accent); }
     <!-- 两级目录：章 li 内嵌 ul 列小节。小节 h3 须带 id（如 id="s1-1"），附录 h4 分组带 id（gl-1…），链接与之对应。
          宽屏(≥1380px)自动变左侧固定栏并随滚动高亮（配合文末 script） -->
     <li><a href="#ch1">一、行业背景</a><ul><li><a href="#s1-1">1.1 行业定义</a></li><li><a href="#s1-2">1.2 发展阶段</a></li><li><a href="#s1-3">1.3 业务规模</a></li></ul></li>
-    <li><a href="#ch2">二、商业模式</a><ul><!-- 2.1/2.2/2.3 --></ul></li>
+    <li><a href="#ch2">二、商业模式</a><ul><!-- 2.1/2.2/2.3/2.4 --></ul></li>
     <li><a href="#ch3">三、需求分析</a><ul><!-- 3.1/3.2/3.3 --></ul></li>
     <li><a href="#appendix">附录：行业术语表</a><ul><!-- 分组 gl-1… --></ul></li>
   </ol>
@@ -269,14 +273,21 @@ a { color: var(--accent); }
   <div class="chap-head">
     <div class="eyebrow">第 二 章</div>
     <h2>商业模式</h2>
-    <p class="lede">本章回答：这门生意服务谁、满足什么需求？提供的产品和服务是什么？资金如何流动、利益如何分配？</p>
+    <p class="lede">本章回答：这门生意服务谁、满足什么需求？卖的产品和服务是什么？上下游怎么协作？钱怎么流转、怎么挣？</p>
   </div>
   <h3>2.1 目标客户与需求</h3>
   <!-- 客户是谁 + 需求分层 + 隐形事实 -->
   <h3>2.2 产品与服务</h3>
-  <!-- 真正卖的是什么；图2 产品全景（构成要素/生命周期/产品家族三层）；经营策略段 -->
-  <h3>2.3 资金上下游与利益分配</h3>
-  <!-- 图3 资金链双层图；利益分配段；上下游表（位置|角色|做什么|核心诉求，包在 .table-scroll） -->
+  <!-- 真正卖的是什么；图2 产品全景【两层：客户掏差价买的是哪几件事 / 装进哪几种订单形态里卖并对比】
+       ⚠ 不许有"生命周期/怎么从头走到尾"这一层——那是第三章 L1 的活；经营策略段 -->
+  <h3>2.3 上下游业务协作链</h3>
+  <!-- 一两句话总起 → 图3 业务协作链（按上下游维度单向排布、从业务起点出发、⓪①②…按一单生意的顺序、
+       实线=合规链/金虚线=灵活链、底注只写一句题眼）→ 图后分条讲解 → 上下游表（位置|角色|做什么|核心诉求，包在 .table-scroll）
+       ⚠ 本节不出现金额；实质不同的主体不许合并 -->
+  <h3>2.4 资金流转与利益分配</h3>
+  <!-- callout「XX 行业怎么挣钱」→ 图4 资金流转图【利润账画在图内：跟一笔具体金额走完，层层扣减到真实利润率】
+       → 图后分条讲钱的时间线（先掏钱→再等钱→钱到账才知道赚没赚）→ 利益分配段（每个角色赚什么）
+       ⚠ 只讲钱与票，不重复单与货；不另拆利润漏斗图 -->
 </section>
 
 <section class="chapter" id="ch3">
@@ -286,7 +297,7 @@ a { color: var(--accent); }
     <p class="lede">本章回答：业务全流程如何运转？每个环节由谁参与、有何特征、痛点在哪里？</p>
   </div>
   <h3>3.1 L1 总流程</h3>
-  <!-- 图4 六环节流程图 + "最反直觉的一点"段落 -->
+  <!-- 图5 六环节流程图 + "最反直觉的一点"段落（图号按出现顺序连续，2.x 加图会顺延） -->
   <h3>3.2 分块详解</h3>
   <!-- 每个环节一个 .block：
   <div class="block">
@@ -300,9 +311,10 @@ a { color: var(--accent); }
       <h5>痛点</h5><ul>…</ul>
     </div>
   </div>
-  行业特色图（图5）挂在最复杂的块内；灰色环节加 <div class="warnbox"><b>合规风险提示</b>：…</div> -->
-  <h3>3.3 方案切入视角</h3>
-  <!-- callout"痛点根因"（三座大山）+ ol 三条要点 -->
+  行业特色图（编号顺延）挂在最复杂的块内；灰色环节加 <div class="warnbox"><b>合规风险提示</b>：…</div> -->
+  <h3>3.3 方案建议</h3>
+  <!-- callout 一两句话收痛点（2–4 个死结，不列大表）+ 按 P0–P3 列价值点（每条：哪个角色期望实现什么，对应痛点①…）
+       + 收尾一条边界（这个行业哪里别碰） -->
 </section>
 
 <section class="chapter" id="appendix">
