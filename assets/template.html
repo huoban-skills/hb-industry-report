@@ -201,6 +201,22 @@ a.term { text-decoration: none; }
 a.term:hover, a.term:focus { background: var(--gold-soft); }
 dl.glossary > div { scroll-margin-top: 24px; }
 dl.glossary > div:target { background: var(--gold-soft); }
+nav.toc ol { columns: 1; }
+nav.toc ol > li { margin: 6px 0; }
+nav.toc ul { list-style: none; padding-left: 14px; margin: 3px 0 8px; }
+nav.toc ul li { margin: 2px 0; }
+nav.toc ul a { font-size: 13px; color: var(--muted); }
+nav.toc a.active { color: var(--gold); font-weight: 700; }
+@media (min-width: 1380px) {
+  nav.toc { position: fixed; top: 72px; left: max(24px, calc(50% - 620px));
+    width: 190px; max-height: calc(100vh - 120px); overflow-y: auto; margin: 0;
+    padding: 0 14px 24px 0; background: none; border: none; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+  nav.toc::-webkit-scrollbar { width: 4px; }
+  nav.toc::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
+  nav.toc::-webkit-scrollbar-track { background: transparent; }
+  nav.toc .toc-title { margin-bottom: 14px; }
+  nav.toc ol > li { margin: 10px 0; }
+}
 footer.colophon {
   margin-top: 80px; padding-top: 20px; border-top: 3px double var(--line);
   font-size: 13px; color: var(--muted);
@@ -228,10 +244,12 @@ a { color: var(--accent); }
 <nav class="toc">
   <div class="toc-title">目 录</div>
   <ol>
-    <li><a href="#ch1">一、行业背景</a></li>
-    <li><a href="#ch2">二、商业模式</a></li>
-    <li><a href="#ch3">三、需求分析</a></li>
-    <li><a href="#appendix">附录：行业术语表</a></li>
+    <!-- 两级目录：章 li 内嵌 ul 列小节。小节 h3 须带 id（如 id="s1-1"），附录 h4 分组带 id（gl-1…），链接与之对应。
+         宽屏(≥1380px)自动变左侧固定栏并随滚动高亮（配合文末 script） -->
+    <li><a href="#ch1">一、行业背景</a><ul><li><a href="#s1-1">1.1 行业定义</a></li><li><a href="#s1-2">1.2 发展阶段</a></li><li><a href="#s1-3">1.3 业务规模</a></li></ul></li>
+    <li><a href="#ch2">二、商业模式</a><ul><!-- 2.1/2.2/2.3 --></ul></li>
+    <li><a href="#ch3">三、需求分析</a><ul><!-- 3.1/3.2/3.3 --></ul></li>
+    <li><a href="#appendix">附录：行业术语表</a><ul><!-- 分组 gl-1… --></ul></li>
   </ol>
 </nav>
 
@@ -304,3 +322,13 @@ a { color: var(--accent); }
 </footer>
 
 </div>
+
+<!-- 目录滚动高亮（保留在文件末尾） -->
+<script>
+(function(){var links=[].slice.call(document.querySelectorAll('nav.toc a'));var pairs=[];
+links.forEach(function(a){var el=document.getElementById(a.getAttribute('href').slice(1));if(el)pairs.push([el,a]);});
+function spy(){var y=window.scrollY+120,cur=null;
+pairs.forEach(function(p){if(p[0].getBoundingClientRect().top+window.scrollY<=y)cur=p[1];});
+links.forEach(function(a){a.classList.toggle('active',a===cur);});}
+window.addEventListener('scroll',spy,{passive:true});spy();})();
+</script>
