@@ -210,10 +210,8 @@ nav.toc a.active { color: var(--gold); font-weight: 700; }
 @media (min-width: 1380px) {
   nav.toc { position: fixed; top: 72px; left: max(24px, calc(50% - 620px));
     width: 190px; max-height: calc(100vh - 120px); overflow-y: auto; margin: 0;
-    padding: 0 14px 24px 0; background: none; border: none; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
-  nav.toc::-webkit-scrollbar { width: 4px; }
-  nav.toc::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
-  nav.toc::-webkit-scrollbar-track { background: transparent; }
+    padding: 0 14px 24px 0; background: none; border: none; scrollbar-width: none; }
+  nav.toc::-webkit-scrollbar { display: none; }
   nav.toc .toc-title { margin-bottom: 14px; }
   nav.toc ol > li { margin: 10px 0; }
 }
