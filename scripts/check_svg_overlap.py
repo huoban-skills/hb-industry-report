@@ -148,9 +148,9 @@ def check_file(path):
                                    f'文字压文字: "{t1[:16]}" 与 "{t2[:16]}" 重叠 {ox:.0f}×{oy:.0f}px'))
     return issues
 
-def main():
+def main(paths):
     fail = False
-    for f in sys.argv[1:]:
+    for f in paths:
         issues = check_file(f)
         name = f.split('/')[-1]
         if not issues:
@@ -159,6 +159,10 @@ def main():
         for lv, label, msg in issues:
             print(f'  [{lv}] {label} — {msg}')
             fail |= (lv == 'FAIL')
-    sys.exit(1 if fail else 0)
+    return 1 if fail else 0
 
-main()
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print(__doc__)
+        sys.exit(2)
+    sys.exit(main(sys.argv[1:]))

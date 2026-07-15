@@ -32,14 +32,21 @@
 写入：`lark-cli docs +update --doc <token> --command overwrite --content @doc.xml --as user`
 （`--content @file` 只吃 **cwd 下的相对路径**，先 cd 到工作目录。）
 
-### 2. SVG → 2x PNG
+### 2. SVG → 3200px 宽 PNG
 
-飞书文档不吃内嵌 SVG，把每张图单独渲染成 PNG（无头 Chrome 截图 SVG 外框元素，2 倍分辨率）。
+飞书文档不吃内嵌 SVG。先跑终稿收口，确保 `figures/` 与 HTML 是同一版；再用固定脚本导图：
+
+```bash
+python3 scripts/finalize.py <行业名>/<报告.html>
+python3 scripts/export_png.py <行业名>/<报告.html>
+```
+
+`export_png.py` 会把 `figures/*.svg` 等比导出到 `figures-png/*.png`：**每张固定宽 3200px，高度按 viewBox 等比计算，并裁掉透明方形留白**。这是飞书插图的固定清晰度标准，不再使用“2x”这种会随 SVG 原始尺寸变化的模糊口径。脚本依赖 macOS 自带的 `qlmanage` 与 `sips`；每张导完都会回读像素尺寸，宽度不是 3200px 就直接 FAIL。
 
 ### 3. 插图 → 搬到位 → 清占位
 
 ```bash
-lark-cli docs +media-insert --doc <token> --file fig_export_1.png \
+lark-cli docs +media-insert --doc <token> --file <行业名>/figures-png/01-发展时间轴.png \
   --align center --width 720 --caption "图 1 · ……" --as user
 ```
 
