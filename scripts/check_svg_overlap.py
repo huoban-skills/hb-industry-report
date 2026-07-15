@@ -2,6 +2,8 @@
 """检查报告 HTML 内嵌 SVG 的两类图形缺陷（零 token 自检，代替截图肉眼检查）：
 1. 文字被线/路径穿过或贴得过近（<5px 记 WARN，穿过记 FAIL）
 2. 文字超出 viewBox 被裁切（FAIL）
+3. 文字压在实心色块上（深底压深字，渲染出来读不清）（FAIL）
+4. 文字压文字（两个标签互相覆盖）（FAIL）
 
 用法: python3 check_svg_overlap.py <报告.html> [更多.html ...]
 退出码: 有 FAIL 时为 1。文字宽度按 CJK≈1em、ASCII≈0.55em 估算，个别 WARN 需人工复核。
@@ -80,14 +82,14 @@ def check_file(path):
         vb = attr(svg[:svg.index('>')+1], 'viewBox', '0 0 99999 99999').split()
         vw, vh = float(vb[2]), float(vb[3])
         body = re.sub(r'<defs>.*?</defs>', '', svg, flags=re.S)
-        texts = []
+        texts, text_tags = [], []
         for t in re.finditer(r'<text\b([^>]*)>(.*?)</text>', body, re.S):
             tag, inner = t.group(1), re.sub(r'<[^>]+>', '', t.group(2)).strip()
             if not inner or 'transform' in tag: continue
             fs = float(attr(tag, 'font-size', '16'))
             bb = text_bbox(float(attr(tag, 'x', '0')), float(attr(tag, 'y', '0')),
                            fs, attr(tag, 'text-anchor', 'start'), inner)
-            texts.append((inner, bb))
+            texts.append((inner, bb)); text_tags.append(tag)
             if bb[0] < -1 or bb[1] < -1 or bb[2] > vw + 1 or bb[3] > vh + 1:
                 issues.append(('FAIL', label, f'文字超出画布: "{inner[:22]}" bbox={tuple(round(v) for v in bb)} viewBox={vw:.0f}x{vh:.0f}'))
         segs = []  # (desc, points)
@@ -113,6 +115,37 @@ def check_file(path):
                 issues.append(('FAIL', label, f'线穿文字: "{txt[:22]}" 被 {worst[1]} 穿过'))
             elif worst and worst[0] < WARN_GAP:
                 issues.append(('WARN', label, f'线贴文字(间距{worst[0]:.1f}px): "{txt[:22]}" 近 {worst[1]}'))
+        # 文字压实心块（深底上压深字，渲染出来根本读不清；线检查和文字检查都抓不到）
+        solids = []
+        for tag in re.findall(r'<rect\b[^>]*>', body):
+            if 'fill="var(--accent)"' not in tag:
+                continue
+            try:
+                rx, ry = float(attr(tag, 'x', 0)), float(attr(tag, 'y', 0))
+                rw, rh = float(attr(tag, 'width', 0)), float(attr(tag, 'height', 0))
+            except (TypeError, ValueError):
+                continue
+            solids.append((rx, ry, rx + rw, ry + rh))
+        for (txt, bb), tag in zip(texts, text_tags):
+            # 块内的白字/浅色字是正常的，只查深色字压深色块
+            if any(k in tag for k in ('--surface', '--gold-soft', '#fff', '#ffffff')):
+                continue
+            for r in solids:
+                ox = min(bb[2], r[2]) - max(bb[0], r[0])
+                oy = min(bb[3], r[3]) - max(bb[1], r[1])
+                if ox > 1 and oy > 1:
+                    issues.append(('FAIL', label,
+                                   f'文字压实心块: "{txt[:18]}" 压在深色块上 {ox:.0f}×{oy:.0f}px，读不清'))
+                    break
+        # 文字压文字（两块标签互相覆盖，肉眼一看就糊，但线检查抓不到）
+        for i in range(len(texts)):
+            for j in range(i + 1, len(texts)):
+                (t1, b1), (t2, b2) = texts[i], texts[j]
+                ox = min(b1[2], b2[2]) - max(b1[0], b2[0])
+                oy = min(b1[3], b2[3]) - max(b1[1], b2[1])
+                if ox > 1 and oy > 1:   # 留 1px 容差，避免相邻行误报
+                    issues.append(('FAIL', label,
+                                   f'文字压文字: "{t1[:16]}" 与 "{t2[:16]}" 重叠 {ox:.0f}×{oy:.0f}px'))
     return issues
 
 def main():
