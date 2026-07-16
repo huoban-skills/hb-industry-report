@@ -17,15 +17,18 @@
   5. 术语孤儿        附录有词条、正文从没链过去                        FAIL
   6. 图内抽象词      SVG 文字里出现抽象黑名单词                        FAIL
   7. SVG 硬编码色    fill/stroke 写死颜色而非 var(--x)                 FAIL
-  8. 正文抽象词      正文/表格里的黑名单词（可能误报，人工看）          WARN
-  9. 图解元话语      "如图所示""把图 N 走一遍"这类废话                 WARN
- 10. 系统维度用语    按钮/字段/自动化/导入导出（行业固有词会误报）      WARN
+  8. SVG 未定义变量  图内 var(--x) 未在 :root 声明                     FAIL
+  9. 正文抽象词      正文/表格里的黑名单词（可能误报，人工看）          WARN
+ 10. 图解元话语      "如图所示""把图 N 走一遍"这类废话                 WARN
+ 11. 系统维度用语    按钮/字段/自动化/导入导出（行业固有词会误报）      WARN
+ 12. 业务块五段      3.2 每个 .block 固定五个 h5 齐全                    FAIL
 """
 import re
 import sys
 import html as H
 
 ABSTRACT = ["要素", "交付", "输入", "输出", "职责", "赋能", "协同", "资源整合"]
+REQUIRED_H5 = ["这个环节在做什么", "子流程", "谁在参与", "业务特征", "痛点"]
 SYSTEM_WORDS = ["按钮", "自动化", "字段", "导入导出", "导 Excel", "软件系统"]
 META_TALK = [r"如图所示", r"把图\s*\d+\s*走一遍", r"对照图", r"见上图", r"如下图"]
 
@@ -81,7 +84,26 @@ def check(path):
             + "、".join(o.replace("term-", "") for o in orphans)
         )
 
-    # --- 6/7. SVG 内部 ---
+    # --- 12. 业务块五段齐全（3.2 每个 .block 固定五个 h5）---
+    block_opens = [mo.start() for mo in re.finditer(r'<div[^>]*class="block"[^>]*>', body)]
+    if not block_opens:
+        warns.append("[业务块] 没找到任何 .block——3.2 分块详解是不是漏了？")
+    for k, start in enumerate(block_opens):
+        end = block_opens[k + 1] if k + 1 < len(block_opens) else len(body)
+        nxt_h3 = re.search(r"<h3\b", body[start:end])   # 最后一块别吞掉 3.3/附录
+        if nxt_h3:
+            end = start + nxt_h3.start()
+        h5s = [strip_tags(t) for t in re.findall(r"<h5[^>]*>(.*?)</h5>", body[start:end], re.S)]
+        missing = [r for r in REQUIRED_H5 if not any(r in h for h in h5s)]
+        if missing:
+            fails.append(
+                f"[业务块五段] 第 {k + 1} 个环节缺 {'、'.join(missing)}"
+                f"（五段固定：{'/'.join(REQUIRED_H5)}）"
+            )
+
+    # --- 6/7/8. SVG 内部 ---
+    root_blocks = re.findall(r":root(?:\[[^]]+\])?\s*\{([^{}]*)\}", src, re.S)
+    declared_vars = set(re.findall(r"(--[A-Za-z0-9_-]+)\s*:", "\n".join(root_blocks)))
     for svg in re.findall(r"<svg\b.*?</svg>", body, re.S):
         label = re.search(r'aria-label="([^"]*)"', svg)
         tag = (label.group(1)[:24] + "…") if label else "无 aria-label 的图"
@@ -94,8 +116,14 @@ def check(path):
         hard = [c for c in hard if c.lower() not in ("#fff", "#ffffff", "none")]
         if hard:
             fails.append(f"[SVG硬编码色] 「{tag}」写死颜色 {sorted(set(hard))[:3]}——应统一用 var(--accent) 等")
+        used_vars = set(re.findall(r"var\(\s*(--[A-Za-z0-9_-]+)\s*\)", svg))
+        missing_vars = sorted(used_vars - declared_vars)
+        if missing_vars:
+            fails.append(
+                f"[SVG未定义变量] 「{tag}」引用 {'、'.join(missing_vars)}，但未在 :root 声明——浏览器会丢失对应样式"
+            )
 
-    # --- 8/9/10. 正文（WARN） ---
+    # --- 9/10/11. 正文（WARN） ---
     prose = strip_tags(re.sub(r"<svg\b.*?</svg>", "", body, flags=re.S))
     for w in ABSTRACT:
         n = prose.count(w)
