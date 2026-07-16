@@ -226,6 +226,16 @@ a { color: var(--accent); }
 @media (max-width: 560px) { nav.toc ol { columns: 1; } }
 /* PDF 导出：图与图注、环节卡片、表格不许被分页切开 */
 @media print { .figure, .block, .callout, .warnbox, table, .stats { break-inside: avoid; } }
+
+/* 术语悬停卡：正文黑话悬停/点按即显词条解释，不跳转 */
+.term-tip {
+  position: absolute; z-index: 99; max-width: 320px;
+  background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--gold);
+  padding: 10px 14px 9px; font-size: 13px; line-height: 1.7; color: var(--ink-soft);
+  box-shadow: 0 4px 18px rgba(0,0,0,.14); display: none;
+}
+.term-tip b { color: var(--ink); display: block; margin-bottom: 2px; font-size: 13.5px; }
+.term-tip small { color: var(--muted); font-weight: 400; margin-left: 6px; font-size: 12px; }
 </style>
 
 <div class="wrap">
@@ -341,4 +351,34 @@ function spy(){var y=window.scrollY+120,cur=null;
 pairs.forEach(function(p){if(p[0].getBoundingClientRect().top+window.scrollY<=y)cur=p[1];});
 links.forEach(function(a){a.classList.toggle('active',a===cur);});}
 window.addEventListener('scroll',spy,{passive:true});spy();})();
+</script>
+
+<!-- 术语悬停卡（保留在文件末尾） -->
+<script>
+(function(){
+var tip=document.createElement('div');tip.className='term-tip';document.body.appendChild(tip);
+var hideT=null;
+function show(a){var id=a.getAttribute('href').slice(1);var d=document.getElementById(id);if(!d)return;
+  var dt=d.querySelector('dt'),dd=d.querySelector('dd');if(!dd)return;
+  tip.innerHTML='';
+  if(dt){var b=document.createElement('b');b.textContent=dt.textContent.replace(/\s+/g,' ').trim();tip.appendChild(b);}
+  tip.appendChild(document.createTextNode(dd.textContent.trim()));
+  tip.style.display='block';
+  var r=a.getBoundingClientRect(),vw=document.documentElement.clientWidth;
+  tip.style.maxWidth=Math.min(320,vw-32)+'px';
+  var top=r.bottom+window.scrollY+8,left=r.left+window.scrollX;
+  if(left+tip.offsetWidth>window.scrollX+vw-16)left=window.scrollX+vw-16-tip.offsetWidth;
+  tip.style.top=top+'px';tip.style.left=Math.max(16,left)+'px';}
+function hide(){tip.style.display='none';}
+[].slice.call(document.querySelectorAll('a.term[href^="#term-"]')).forEach(function(a){
+  a.addEventListener('mouseenter',function(){clearTimeout(hideT);show(a);});
+  a.addEventListener('mouseleave',function(){hideT=setTimeout(hide,180);});
+  a.addEventListener('click',function(e){e.preventDefault();clearTimeout(hideT);
+    tip.style.display==='block'?hide():show(a);});
+});
+tip.addEventListener('mouseenter',function(){clearTimeout(hideT);});
+tip.addEventListener('mouseleave',function(){hideT=setTimeout(hide,180);});
+document.addEventListener('click',function(e){
+  if(!tip.contains(e.target)&&!(e.target.closest&&e.target.closest('a.term')))hide();});
+})();
 </script>
