@@ -3,10 +3,11 @@
 
     python3 scripts/finalize.py <行业名>/<报告.html>
 
-  1. 重导 figures/  —— 把 HTML 里每张内嵌 SVG 重新导成独立 .svg（浅色化 + 补 xmlns）。
+  1. 重导 figures/  —— 把 HTML 里每张内嵌 SVG 重新导成独立 .svg（浅色化 + 补 xmlns），
+                      并确认导出文件不再残留 var()。
                       figures 是内嵌图的派生物，图改过多轮后它就旧了，这里统一对齐。
-  2. 内容检查      —— 章节骨架 / 图号 / 图注 / 术语死链与孤儿 / 图内抽象词 / 硬编码色。
-  3. 图形检查      —— 线穿文字 / 文字出画布 / 文字叠字 / 文字压色块。
+  2. 内容检查      —— 章节骨架 / 图号 / 图注 / 术语死链与孤儿 / 图内抽象词 / 硬编码色 / 业务块五段。
+  3. 图形检查      —— 线穿文字 / 文字出画布 / 文字叠字 / 文字压色块 / marker id 重复。
 
 任何一项有 FAIL 就退出码 1、不算过。全绿才能交付（导 PDF / 同步飞书）。
 """
@@ -60,13 +61,33 @@ def reexport_figures(html_path):
     return len(svgs)
 
 
+def check_exported_figures(html_path):
+    figdir = os.path.join(os.path.dirname(html_path) or '.', 'figures')
+    fails = []
+    for name in sorted(os.listdir(figdir)):
+        if not name.endswith('.svg'):
+            continue
+        path = os.path.join(figdir, name)
+        svg = open(path, encoding='utf-8').read()
+        refs = sorted(set(re.findall(r'var\(\s*(--[A-Za-z0-9_-]+)', svg)))
+        if refs:
+            fails.append(
+                f"[独立SVG变量残留] figures/{name} 仍含 {'、'.join(refs)}——脱离 HTML 后样式会失效"
+            )
+    return fails
+
+
 def main(paths):
     total_fail = 0
     for p in paths:
         print(f"\n{'='*64}\n{p}")
 
         n = reexport_figures(p)
-        print(f"  ① figures/ 重导 {n} 张（与报告对齐）")
+        export_fails = check_exported_figures(p)
+        for f in export_fails:
+            print(f"     FAIL {f}")
+        export_status = 'PASS' if not export_fails else f'{len(export_fails)} 项 FAIL'
+        print(f"  ① figures/ 重导 {n} 张（与报告对齐；变量检查 {export_status}）")
 
         fails, warns = content_check(p)
         for f in fails:
@@ -81,7 +102,7 @@ def main(paths):
             print(f"     {lv} {msg}")
         print(f"  ③ 图形检查：{'PASS' if not sfails else f'{len(sfails)} 项 FAIL'}")
 
-        total_fail += len(fails) + len(sfails)
+        total_fail += len(export_fails) + len(fails) + len(sfails)
 
     verdict = "全绿，可以交付。" if not total_fail else "清零后才能交付。"
     print(f"\n{'='*64}\n总计 FAIL {total_fail} 项。{verdict}")

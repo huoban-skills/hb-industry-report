@@ -4,6 +4,7 @@
 2. 文字超出 viewBox 被裁切（FAIL）
 3. 文字压在实心色块上（深底压深字，渲染出来读不清）（FAIL）
 4. 文字压文字（两个标签互相覆盖）（FAIL）
+5. marker 箭头 id 全文件重复（SVG id 是文档级的，重名会让箭头引用错图）（FAIL）
 
 用法: python3 check_svg_overlap.py <报告.html> [更多.html ...]
 退出码: 有 FAIL 时为 1。文字宽度按 CJK≈1em、ASCII≈0.55em 估算，个别 WARN 需人工复核。
@@ -146,6 +147,12 @@ def check_file(path):
                 if ox > 1 and oy > 1:   # 留 1px 容差，避免相邻行误报
                     issues.append(('FAIL', label,
                                    f'文字压文字: "{t1[:16]}" 与 "{t2[:16]}" 重叠 {ox:.0f}×{oy:.0f}px'))
+    # marker id 全文件唯一（SVG id 是文档级的；两图重名，后图箭头会引用错/丢）
+    marker_ids = re.findall(r'<marker\b[^>]*\bid="([^"]+)"', html)
+    dup = sorted({m for m in marker_ids if marker_ids.count(m) > 1})
+    if dup:
+        issues.append(('FAIL', '全文件',
+                       f'marker id 重复 {dup}——SVG id 文档级，各图箭头要用 arr/arrg/fa/pa 等区分'))
     return issues
 
 def main(paths):

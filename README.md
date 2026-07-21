@@ -65,7 +65,7 @@ git clone https://github.com/huoban-skills/hb-industry-report.git ~/.claude/skil
 
 - 「根据这份访谈记录，出一份行业分析报告」
 - 「帮我梳理一下这个行业 / 把这个行业讲给小白听」
-- 「分析一下 XX 行业」（零素材，走公开资料模式）
+- 「分析一下 XX 行业」（零素材，走公开资料路线）
 - 「研究下 XX 这家公司所在的行业」（先跟你确认主角视角，公司 ≠ 行业）
 - 「这份录音转写，帮我做成行业普及材料」
 
@@ -92,7 +92,7 @@ git clone https://github.com/huoban-skills/hb-industry-report.git ~/.claude/skil
 hb-industry-report/
 ├── SKILL.md                      # 输入分流、工作流程、8 条铁律、自检清单
 ├── references/framework.md       # 逐节写作指南（含 5 类骨架图的画法）
-├── references/desk-research.md   # 零素材模式：哪些能写、哪些必须留白
+├── references/desk-research.md   # 素材不足时：哪些能写、哪些必须留白
 ├── references/lark-sync.md       # 同步到飞书文档（含实战踩坑）
 ├── scripts/finalize.py           # 终稿统一入口：重导 SVG + 内容检查 + 图形检查
 ├── scripts/check_report.py       # 质量闸：章节/图号/术语/抽象词/硬编码色
