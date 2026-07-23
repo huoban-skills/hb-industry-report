@@ -101,6 +101,29 @@ def check(path):
                 f"（五段固定：{'/'.join(REQUIRED_H5)}）"
             )
 
+    # --- 5b. div 闭合平衡（callout/warnbox 漏 </div> 会把后文整段吞进样式盒） ---
+    nosvg = re.sub(r"<svg\b.*?</svg>", "", body, flags=re.S)
+    n_open, n_close = len(re.findall(r"<div\b", nosvg)), nosvg.count("</div>")
+    if n_open != n_close:
+        # 逐行累计深度，定位第一处「开了 callout/warnbox 却直到下个 h3/figure 还没关」的行
+        hint = ""
+        depth, opened_at = 0, None
+        for ln, line in enumerate(nosvg.split("\n"), 1):
+            for m in re.finditer(r"<div\b[^>]*class=\"(callout|warnbox)\"|<div\b|</div>", line):
+                t = m.group(0)
+                if t == "</div>":
+                    depth -= 1
+                    if depth <= 0:
+                        opened_at = None
+                else:
+                    depth += 1
+                    if 'class="callout"' in t or 'class="warnbox"' in t:
+                        opened_at = (ln, t[:40])
+            if opened_at and re.search(r"<(h3|figure)\b", line) and ln > opened_at[0]:
+                hint = f"；疑似第 {opened_at[0]} 行的 {opened_at[1]}… 未闭合"
+                break
+        fails.append(f"[div未闭合] <div> {n_open} 个 / </div> {n_close} 个，不配对{hint}——漏 </div> 会把后文吞进 callout/warnbox 样式")
+
     # --- 6/7/8. SVG 内部 ---
     root_blocks = re.findall(r":root(?:\[[^]]+\])?\s*\{([^{}]*)\}", src, re.S)
     declared_vars = set(re.findall(r"(--[A-Za-z0-9_-]+)\s*:", "\n".join(root_blocks)))
@@ -122,6 +145,15 @@ def check(path):
             fails.append(
                 f"[SVG未定义变量] 「{tag}」引用 {'、'.join(missing_vars)}，但未在 :root 声明——浏览器会丢失对应样式"
             )
+        # 画布下方大留白：viewBox 高度远超内容实际最低 y（粗估 text/rect/circle/path 端点）
+        vb = re.search(r'viewBox="0 0 (\d+) (\d+)"', svg)
+        if vb:
+            vh = int(vb.group(2))
+            ys = [float(v) for v in re.findall(r'\b(?:y|cy|y1|y2)="([\d.]+)"', svg)]
+            ys += [float(v) + float(h) for v, h in re.findall(r'y="([\d.]+)"[^>]*height="([\d.]+)"', svg)]
+            ys += [float(v) for p in re.findall(r'\bd="([^"]+)"', svg) for v in re.findall(r"[\s,](\d+(?:\.\d+)?)", p)[1::2]]
+            if ys and vh - max(ys) > 80:
+                fails.append(f"[SVG下方留白] 「{tag}」viewBox 高 {vh}，内容最低约 y={max(ys):.0f}——画布过高留出大片空白，收窄高度")
 
     # --- 9/10/11. 正文（WARN） ---
     prose = strip_tags(re.sub(r"<svg\b.*?</svg>", "", body, flags=re.S))
